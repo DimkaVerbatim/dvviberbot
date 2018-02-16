@@ -7,7 +7,7 @@
     <title>Dimkaverbatim viber bot</title>
 </head>
 <body>
-<h2>Hello World!</h2>
-<b>Привіт всім, Дімас руліт!!!!!!!!!!!</b>
+<h1>Viber Bot</h1>
+<b>Hello for everyone! It will be my the first bot on java.</b>
 </body>
 </html>
