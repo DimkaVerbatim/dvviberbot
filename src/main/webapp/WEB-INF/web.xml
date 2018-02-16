@@ -3,5 +3,13 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>Dimkaverbatim viber bot</display-name>
+  <servlet>
+    <servlet-name>letsencrypt</servlet-name>
+    <servlet-class>ua.pp.dvviberbot.LetsEncryptServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>letsencrypt</servlet-name>
+    <url-pattern>/.well-known/acme-challenge/*</url-pattern>
+  </servlet-mapping>
 </web-app>
