@@ -20,6 +20,7 @@
         <servlet-name>letsencrypt</servlet-name>
         <url-pattern>/.well-known/acme-challenge/*</url-pattern>
     </servlet-mapping>
+    <!--
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>secured page</web-resource-name>
@@ -29,4 +30,5 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    -->
 </web-app>
