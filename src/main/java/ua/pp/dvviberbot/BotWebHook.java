@@ -63,7 +63,7 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Це бот був написаний Дімасом! )))) Поки я можу повторювати надімлані мені повідомлення: " + msgText);
+                    jsonResponse.put("text", "This bot wrote DIMAS!! )))) I can repeat message : " + msgText);
                     jsonResponse.put("type", "text");
 
                     /*
