@@ -1,5 +1,6 @@
 package ua.pp.dvviberbot;
 
+//import com.sun.org.apache.xpath.internal.operations.String;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +19,7 @@ import java.net.URL;
 public class BotWebHook extends HttpServlet {
 
     private final String secretKey = "47659e83e627d6c7-131d26b96d02cf8d-df57301eeea40afb";
+    private boolean bCorrectSignature = false;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,20 +35,26 @@ public class BotWebHook extends HttpServlet {
         } catch (Exception e) { /*report an error*/ }
 
         try {
-            response.setContentType("application/json");
-            JSONObject jsonRequst = new JSONObject(jb.toString());
+            response.setContentType("application/json; charset=utf-8");
+            /*convert charset*/
+            String strInput = jb.toString();
+            byte[] bytes = strInput.getBytes("ISO-8859-1");
+            String s = new String(bytes, "UTF-8");
+
+            JSONObject jsonRequst = new JSONObject(s);
             JSONObject jsonResponse = new JSONObject();
 
             ViberSignatureValidator viberSignatureValidator = new ViberSignatureValidator(secretKey);
             if (viberSignatureValidator.isSignatureValid(signature, jb.toString())) {
-                System.out.println("Signature checked");
-            }
-            else {
-                System.out.println("Signature not checked");
+                bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event")){
+            if (!jsonRequst.isNull("event") && bCorrectSignature){
+
+                response.setHeader("X-Viber-Auth-Token", secretKey);
+                response.setHeader("Content-Type", "application/json; charset=utf-8");
                 String eventParam = jsonRequst.getString("event");
+
                 if (eventParam.equals("webhook")) {
                     /* read param webhook*/
                     jsonResponse.put("event_types","delivered");
@@ -63,12 +71,13 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "This bot wrote DIMAS!! )))) I can repeat message : " + msgText);
+                    jsonResponse.put("text", "Привіт! Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
                     jsonResponse.put("type", "text");
 
                     /*
                      * here need send answer for viber
                      * */
+
                     String strRusult = sendMessage(jsonResponse.toString());
 
                     /* send answer*/
@@ -84,8 +93,6 @@ public class BotWebHook extends HttpServlet {
             }
 
             /* send answer*/
-            /*!!!!!!!!!!!!!!1SEND ONLY IF GOOD SIGNATURE!!!!!!!!!!!*/
-            response.setHeader("X-Viber-Auth-Token", secretKey);
             response.getOutputStream().print(jsonResponse.toString());
 
         } catch (JSONException e) {
@@ -105,8 +112,8 @@ public class BotWebHook extends HttpServlet {
 
         // CURLOPT_FOLLOWLOCATION
         con.setInstanceFollowRedirects(true);
-
         con.setRequestProperty("Content-length", String.valueOf(textMessage.length()));
+        con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         con.setRequestProperty("X-Viber-Auth-Token", secretKey);
         con.setDoOutput(true);
         con.setDoInput(true);
