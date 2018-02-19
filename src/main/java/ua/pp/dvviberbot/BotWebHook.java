@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") && bCorrectSignature){
+            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -71,7 +71,7 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Привіт! Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
+                    jsonResponse.put("text", "Привіт, msgSenderName!" + "Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
                     jsonResponse.put("type", "text");
 
                     /*
@@ -119,7 +119,10 @@ public class BotWebHook extends HttpServlet {
         con.setDoInput(true);
 
         DataOutputStream output = new DataOutputStream(con.getOutputStream());
-        output.writeBytes(textMessage);
+        /*change charset*/
+        byte[] bytes = textMessage.getBytes("UTF-8");
+        String s = new String(bytes, "ISO-8859-1");
+        output.writeBytes(s);
         output.close();
 
         // "Post data send ... waiting for reply");
