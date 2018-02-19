@@ -3,13 +3,21 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Dimkaverbatim viber bot</display-name>
-  <servlet>
-    <servlet-name>letsencrypt</servlet-name>
-    <servlet-class>ua.pp.dvviberbot.LetsEncryptServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>letsencrypt</servlet-name>
-    <url-pattern>/.well-known/acme-challenge/*</url-pattern>
-  </servlet-mapping>
+    <display-name>Dimkaverbatim viber bot</display-name>
+    <servlet>
+        <servlet-name>letsencrypt</servlet-name>
+        <servlet-class>ua.pp.dvviberbot.LetsEncryptServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>botwebhook</servlet-name>
+        <servlet-class>ua.pp.dvviberbot.BotWebHook</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>botwebhook</servlet-name>
+        <url-pattern>/botwebhook</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>letsencrypt</servlet-name>
+        <url-pattern>/.well-known/acme-challenge/*</url-pattern>
+    </servlet-mapping>
 </web-app>
