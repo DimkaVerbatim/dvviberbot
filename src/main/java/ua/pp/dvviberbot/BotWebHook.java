@@ -38,10 +38,7 @@ public class BotWebHook extends HttpServlet {
             response.setContentType("application/json");
             /*convert charset*/
             String strInput = jb.toString();
-            System.out.println(strInput);
-            byte[] bytes = strInput.getBytes("ISO-8859-1");
-            String s = new String(bytes, "UTF-8");
-            System.out.println(s);
+            String s = new String(strInput.getBytes("ISO-8859-1"), "UTF-8");
             JSONObject jsonRequst = new JSONObject(s);
             JSONObject jsonResponse = new JSONObject();
 
@@ -50,7 +47,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") && bCorrectSignature){
+            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -72,7 +69,7 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Привіт, msgSenderName!" + "Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
+                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
                     jsonResponse.put("type", "text");
 
                     /*
@@ -121,9 +118,7 @@ public class BotWebHook extends HttpServlet {
 
         DataOutputStream output = new DataOutputStream(con.getOutputStream());
         /*change charset*/
-        byte[] bytes = textMessage.getBytes("UTF-8");
-        String s = new String(bytes, "ISO-8859-1");
-        System.out.println(s);
+        String s = new String(textMessage.getBytes("UTF-8"), "ISO-8859-1");
         output.writeBytes(s);
         output.close();
 
