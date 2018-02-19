@@ -17,7 +17,7 @@ import java.net.URL;
 
 public class BotWebHook extends HttpServlet {
 
-    private final String secretKey = "4453b6ac12345678-e02c5f12174805f9-daec9cbb5448c51f";
+    private final String secretKey = "47659e83e627d6c7-131d26b96d02cf8d-df57301eeea40afb";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -107,7 +107,7 @@ public class BotWebHook extends HttpServlet {
         con.setInstanceFollowRedirects(true);
 
         con.setRequestProperty("Content-length", String.valueOf(textMessage.length()));
-
+        con.setRequestProperty("X-Viber-Auth-Token", secretKey);
         con.setDoOutput(true);
         con.setDoInput(true);
 
