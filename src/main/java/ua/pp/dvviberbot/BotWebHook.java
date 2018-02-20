@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
+            if (!jsonRequst.isNull("event") && bCorrectSignature){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -101,13 +101,13 @@ public class BotWebHook extends HttpServlet {
                         jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". У форматі ###############");
                         jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
                     }
-                    else if (msgTrackingData.substring(0,9).equals("send or <")) {
+                    else if (msgTrackingData.startsWith("send or <")) {
                         if (msgText.matches("[0-9]{15}")) {
-                            jsonResponse.put("text", "Шановний клієнт, " + msgSenderName + ". Інформація по ОР " + msgText + ", на дантй момент не доступна. :-( Реалізація в розробці!");
+                            jsonResponse.put("text", "Шановний клієнт, " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна. :-( Реалізація в розробці!");
                             jsonResponse.put("tracking_data", " bad or");
                         }
                         else {
-                            jsonResponse.put("text", "Ви вказали ОР не вірного формату! Формат ОР 15 чисел. ОР присутнійв квитанції на сплату. Введіть коректний ОР повторно.");
+                            jsonResponse.put("text", "Ви вказали ОР не вірного формату! Формат ОР 15 чисел. ОР присутній в квитанції на сплату. Введіть коректний ОР повторно.");
                             jsonResponse.put("tracking_data", msgTrackingData);
                         }
                     }
