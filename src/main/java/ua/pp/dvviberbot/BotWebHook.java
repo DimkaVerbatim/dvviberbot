@@ -3,14 +3,10 @@ package ua.pp.dvviberbot;
 //import com.sun.org.apache.xpath.internal.operations.String;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.SAXException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.Document;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,6 +19,7 @@ public class BotWebHook extends HttpServlet {
 
     private final String secretKey = "47659e83e627d6c7-131d26b96d02cf8d-df57301eeea40afb";
     private boolean bCorrectSignature = false;
+    private JsonPatterns jsonPatterns = new JsonPatterns();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -69,28 +66,17 @@ public class BotWebHook extends HttpServlet {
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
                     String msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     String msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
+                    String msgTrackingData= jsonRequst.getJSONObject("message").getString("tracking_data");
+                    System.out.println(msgTrackingData);
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
                     jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Це бот DimkaVerbatim! Поки я можу повторювати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
                     jsonResponse.put("type", "text");
-                    /*
-                    "keyboard":{
-                        "Type":"keyboard",
-                                "DefaultHeight":true,
-                                "Buttons":[
-                        {
-                            "ActionType":"reply",
-                                "ActionBody":"reply to me",
-                                "Text":"Key text",
-                                "TextSize":"regular"
-                        }
-                        ]
-                    }
-                    */
-                    /*
-                     * here need send answer for viber
-                     * */
+                    jsonResponse.put("tracking_data","tracking data");
+                    jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
+
+                    /* here need send answer for viber */
 
                     String strRusult = sendMessage(jsonResponse.toString());
 
