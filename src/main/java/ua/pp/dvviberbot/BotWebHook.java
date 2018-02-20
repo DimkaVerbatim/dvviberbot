@@ -3,11 +3,14 @@ package ua.pp.dvviberbot;
 //import com.sun.org.apache.xpath.internal.operations.String;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.SAXException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.Document;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,7 +25,7 @@ public class BotWebHook extends HttpServlet {
     private boolean bCorrectSignature = false;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
         StringBuffer jb = new StringBuffer();
         String line = null;
@@ -69,9 +72,22 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Це бот DimkaVerbatim! Поки я можу повторбвати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
+                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Це бот DimkaVerbatim! Поки я можу повторювати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
                     jsonResponse.put("type", "text");
-
+                    /*
+                    "keyboard":{
+                        "Type":"keyboard",
+                                "DefaultHeight":true,
+                                "Buttons":[
+                        {
+                            "ActionType":"reply",
+                                "ActionBody":"reply to me",
+                                "Text":"Key text",
+                                "TextSize":"regular"
+                        }
+                        ]
+                    }
+                    */
                     /*
                      * here need send answer for viber
                      * */
