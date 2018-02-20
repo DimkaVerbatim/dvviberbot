@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") && bCorrectSignature){
+            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -98,12 +98,12 @@ public class BotWebHook extends HttpServlet {
                     listServices.add("ГВП");
                     listServices.add("ЦО");
                     if (listServices.contains(msgText)) {
-                        jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". Формат (###############)");
+                        jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". У форматі ###############");
                         jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
                     }
-                    else if (msgTrackingData.substring(0,8).equals("send or <")) {
+                    else if (msgTrackingData.substring(0,9).equals("send or <")) {
                         if (msgText.matches("[0-9]{15}")) {
-                            jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName + ". Інформація по ОР " + msgText + ", на дантй момент не доступна. :-( Реалізація в розробці!");
+                            jsonResponse.put("text", "Шановний клієнт, " + msgSenderName + ". Інформація по ОР " + msgText + ", на дантй момент не доступна. :-( Реалізація в розробці!");
                             jsonResponse.put("tracking_data", " bad or");
                         }
                         else {
@@ -112,7 +112,7 @@ public class BotWebHook extends HttpServlet {
                         }
                     }
                     else {
-                        jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
+                        jsonResponse.put("text", "Шановний клієнт, " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
                         jsonResponse.put("tracking_data", "other command");
                     }
                     jsonResponse.put("type", "text");
