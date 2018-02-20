@@ -47,7 +47,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
+            if (!jsonRequst.isNull("event") && bCorrectSignature){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -66,8 +66,12 @@ public class BotWebHook extends HttpServlet {
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
                     String msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     String msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
-                    String msgTrackingData= jsonRequst.getJSONObject("message").getString("tracking_data");
-                    System.out.println(msgTrackingData);
+
+                    System.out.println(jsonRequst.toString());
+                    if (!jsonRequst.getJSONObject("message").isNull("tracking_data")) {
+                        String msgTrackingData = jsonRequst.getJSONObject("message").getString("tracking_data");
+                        System.out.println(msgTrackingData);
+                    }
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
