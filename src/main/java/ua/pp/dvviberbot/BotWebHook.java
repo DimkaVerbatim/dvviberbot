@@ -1,6 +1,5 @@
 package ua.pp.dvviberbot;
 
-//import com.sun.org.apache.xpath.internal.operations.String;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +12,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class BotWebHook extends HttpServlet {
@@ -20,6 +21,7 @@ public class BotWebHook extends HttpServlet {
     private final String secretKey = "47659e83e627d6c7-131d26b96d02cf8d-df57301eeea40afb";
     private boolean bCorrectSignature = false;
     private JsonPatterns jsonPatterns = new JsonPatterns();
+    private List<String> listServices = new ArrayList<String>();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -47,17 +49,35 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") && bCorrectSignature){
+            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
                 String eventParam = jsonRequst.getString("event");
 
+                /*check what event come from viber*/
                 if (eventParam.equals("webhook")) {
                     /* read param webhook*/
                     jsonResponse.put("event_types","delivered");
                     jsonResponse.put("status_message","ok");
                     jsonResponse.put("status",0);
+                }
+                else if (eventParam.equals("conversation_started")){
+                    String msgSenderId = jsonRequst.getJSONObject("user").getString("id");
+                    String msgSenderName = jsonRequst.getJSONObject("user").getString("name");
+                    // here goes the data to send message back to the user
+                    jsonResponse.put("receiver", msgSenderId);
+                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Вас вітає бот DimkaVerbatim! Для передачі показань оберіть послугу." );
+                    jsonResponse.put("type", "text");
+                    jsonResponse.put("tracking_data","start conversation");
+                    jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
+
+                    /* here need send answer for viber */
+                    String strRusult = sendMessage(jsonResponse.toString());
+
+                    /* send answer*/
+                    jsonResponse = new JSONObject(strRusult);
+
                 }
                 else if (eventParam.equals("message")){
 
@@ -66,19 +86,30 @@ public class BotWebHook extends HttpServlet {
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
                     String msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     String msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
-
+                    String msgTrackingData = "";
                     System.out.println(jsonRequst.toString());
                     if (!jsonRequst.getJSONObject("message").isNull("tracking_data")) {
-                        String msgTrackingData = jsonRequst.getJSONObject("message").getString("tracking_data");
+                        msgTrackingData = jsonRequst.getJSONObject("message").getString("tracking_data");
                         System.out.println(msgTrackingData);
                     }
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Це бот DimkaVerbatim! Поки я можу повторювати ваші повідомлення. Ви надіслали мені наступне : " + msgText);
+                    listServices.add("ГВП");
+                    listServices.add("ЦО");
+
+                    if (listServices.contains(msgText)) {
+                        jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". Формат (###############)");
+                        jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
+                    }
+                    else {
+
+                        jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName+ ". Вибачте подальші функції в розробці! Ви нам надіслали: " + msgText);
+                        jsonResponse.put("tracking_data", "other command");
+                    }
                     jsonResponse.put("type", "text");
-                    jsonResponse.put("tracking_data","tracking data");
-                    jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
+
+                    //jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
 
                     /* here need send answer for viber */
 
