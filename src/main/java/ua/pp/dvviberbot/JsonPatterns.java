@@ -8,8 +8,8 @@ public class JsonPatterns {
 
     public JSONObject getJsonPatternChoseServices() {
         JSONArray jsonArrayButtons = new JSONArray();
-        JSONObject firstBtnGVP = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"Для предачачі показників ГВП, введіть ОР по якому бажаєте виконати передачу:\", \"Text\": \"ГВП\", \"TextSize\": \"regular\"}");
-        JSONObject firstBtnCO = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"Для предачачі показників ЦО, введіть ОР по якому бажаєте виконати передачу:\", \"Text\": \"ЦО\", \"TextSize\": \"regular\"}");
+        JSONObject firstBtnGVP = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ГВП\", \"Text\": \"ГВП\", \"TextSize\": \"regular\"}");
+        JSONObject firstBtnCO = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ЦО\", \"Text\": \"ЦО\", \"TextSize\": \"regular\"}");
         jsonPattern.put("Type", "keyboard");
         jsonPattern.put("DefaultHeight", true);
 

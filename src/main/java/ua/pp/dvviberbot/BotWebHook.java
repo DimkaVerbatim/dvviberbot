@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
+            if (!jsonRequst.isNull("event") && bCorrectSignature){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -86,25 +86,33 @@ public class BotWebHook extends HttpServlet {
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
                     String msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     String msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
+
                     String msgTrackingData = "";
-                    System.out.println(jsonRequst.toString());
                     if (!jsonRequst.getJSONObject("message").isNull("tracking_data")) {
                         msgTrackingData = jsonRequst.getJSONObject("message").getString("tracking_data");
-                        System.out.println(msgTrackingData);
                     }
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
+
                     listServices.add("ГВП");
                     listServices.add("ЦО");
-
                     if (listServices.contains(msgText)) {
                         jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". Формат (###############)");
                         jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
                     }
+                    else if (msgTrackingData.substring(0,8).equals("send or <")) {
+                        if (msgText.matches("[0-9]{15}")) {
+                            jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName + ". Інформація по ОР " + msgText + ", на дантй момент не доступна. :-( Реалізація в розробці!");
+                            jsonResponse.put("tracking_data", " bad or");
+                        }
+                        else {
+                            jsonResponse.put("text", "Ви вказали ОР не вірного формату! Формат ОР 15 чисел. ОР присутнійв квитанції на сплату. Введіть коректний ОР повторно.");
+                            jsonResponse.put("tracking_data", msgTrackingData);
+                        }
+                    }
                     else {
-
-                        jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName+ ". Вибачте подальші функції в розробці! Ви нам надіслали: " + msgText);
+                        jsonResponse.put("text", "Шановний клієнтк, " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
                         jsonResponse.put("tracking_data", "other command");
                     }
                     jsonResponse.put("type", "text");
