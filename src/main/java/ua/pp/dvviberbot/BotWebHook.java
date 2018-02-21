@@ -108,12 +108,12 @@ public class BotWebHook extends HttpServlet {
                     listServices.add("ГВП");
                     listServices.add("ЦО");
                     if (listServices.contains(msgText)) {
-                        jsonResponse.put("text", "Введіть, будь ласка, № ОР по послузі " + msgText + ". ОР це 15 цифр з квитанції");
+                        jsonResponse.put("text", "Введіть, будь ласка, № ОР по послузі " + msgText + ":");
                         jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
                     }
                     else if (msgTrackingData.startsWith("send or <")) {
                         if (msgText.matches("[0-9]{15}")) {
-                            jsonResponse.put("text", "Шановний " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна! :-(");
+                            jsonResponse.put("text", "Шановний(a) " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна! :-(");
                             jsonResponse.put("tracking_data", " bad or");
                             jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                         }
@@ -126,7 +126,7 @@ public class BotWebHook extends HttpServlet {
                         jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
                     }
                     else {
-                        jsonResponse.put("text", "Шановний " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
+                        jsonResponse.put("text", "Шановний(a) " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
                         jsonResponse.put("tracking_data", "other command");
                         jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                     }

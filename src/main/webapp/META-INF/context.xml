@@ -1,0 +1,9 @@
+<!-- url="jdbc:postgresql://127.0.0.1:15432/dvviberbotdb" -->
+<Context>
+
+    <Resource name="jdbc/dvviberbotdb" auth="Container"
+              type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://dvviberbotsql:5432/dvviberbotdb"
+              username="admin" password="admin123" maxTotal="20" maxIdle="10"
+              maxWaitMillis="-1"/>
+</Context>
