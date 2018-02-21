@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
+            if (!jsonRequst.isNull("event") && bCorrectSignature){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
