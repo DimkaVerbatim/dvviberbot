@@ -49,7 +49,7 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            if (!jsonRequst.isNull("event") && bCorrectSignature){
+            if (!jsonRequst.isNull("event") /*&& bCorrectSignature*/){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
@@ -90,6 +90,7 @@ public class BotWebHook extends HttpServlet {
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
+                    jsonResponse.put("type", "text");
 
                     listServices.add("ГВП");
                     listServices.add("ЦО");
@@ -115,12 +116,8 @@ public class BotWebHook extends HttpServlet {
                         jsonResponse.put("tracking_data", "other command");
                         jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                     }
-                    jsonResponse.put("type", "text");
-
-                    //jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
 
                     /* here need send answer for viber */
-
                     String strRusult = sendMessage(jsonResponse.toString());
 
                     /* send answer*/

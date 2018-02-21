@@ -36,7 +36,7 @@ public class JsonPatterns {
         jsonPattern.put("text", "Привіт, "+ senderName + "! Вас вітає бот DimkaVerbatim! Для передачі показань оберіть послугу." );
         jsonPattern.put("type", "text");
         jsonPattern.put("tracking_data","start conversation");
-        jsonPattern.put("keyboard",this.getJsonPatternBtnChoseServices());
+        jsonPattern.put("keyboard",new JsonPatterns().getJsonPatternBtnChoseServices());
 
         return jsonPattern;
     }
