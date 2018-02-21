@@ -49,12 +49,14 @@ public class BotWebHook extends HttpServlet {
                 bCorrectSignature = true;
             }
 
-            System.out.println(jsonRequst.toString());
             if (!jsonRequst.isNull("event") && bCorrectSignature){
 
                 response.setHeader("X-Viber-Auth-Token", secretKey);
                 response.setHeader("Content-Type", "application/json");
                 String eventParam = jsonRequst.getString("event");
+
+                String msgSenderId = "";
+                String msgSenderName = "клієнте";
 
                 /*check what event come from viber*/
                 if (eventParam.equals("webhook")) {
@@ -64,8 +66,13 @@ public class BotWebHook extends HttpServlet {
                     jsonResponse.put("status",0);
                 }
                 else if (eventParam.equals("conversation_started")){
-                    String msgSenderId = jsonRequst.getJSONObject("user").getString("id");
-                    String msgSenderName = jsonRequst.getJSONObject("user").getString("name");
+
+                    if (!jsonRequst.getJSONObject("user").isNull("name")){
+                        jsonRequst.getJSONObject("user").getString("name");
+                    }
+                    if (!jsonRequst.getJSONObject("user").isNull("id")) {
+                        jsonRequst.getJSONObject("user").getString("id");
+                    }
 
                     jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
 
@@ -81,8 +88,13 @@ public class BotWebHook extends HttpServlet {
                     /* when a user message is received */
                     String msgType = jsonRequst.getJSONObject("message").getString("type");
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
-                    String msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
-                    String msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
+
+                    if (!jsonRequst.getJSONObject("sender").isNull("name")){
+                        jsonRequst.getJSONObject("sender").getString("name");
+                    }
+                    if (!jsonRequst.getJSONObject("sender").isNull("id")) {
+                        jsonRequst.getJSONObject("sender").getString("id");
+                    }
 
                     String msgTrackingData = "";
                     if (!jsonRequst.getJSONObject("message").isNull("tracking_data")) {
@@ -101,7 +113,7 @@ public class BotWebHook extends HttpServlet {
                     }
                     else if (msgTrackingData.startsWith("send or <")) {
                         if (msgText.matches("[0-9]{15}")) {
-                            jsonResponse.put("text", "Шановний клієнт, " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна. :-( Реалізація в розробці!");
+                            jsonResponse.put("text", "Шановний " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна. :-( Реалізація в розробці!");
                             jsonResponse.put("tracking_data", " bad or");
                         }
                         else {
@@ -113,7 +125,7 @@ public class BotWebHook extends HttpServlet {
                         jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
                     }
                     else {
-                        jsonResponse.put("text", "Шановний клієнт, " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
+                        jsonResponse.put("text", "Шановний " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
                         jsonResponse.put("tracking_data", "other command");
                         jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                     }

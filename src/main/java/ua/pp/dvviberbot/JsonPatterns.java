@@ -33,7 +33,7 @@ public class JsonPatterns {
     }
     public JSONObject getJsonPatternStartConversation(String senderId, String senderName) {
         jsonPattern.put("receiver", senderId);
-        jsonPattern.put("text", "Привіт, "+ senderName + "! Вас вітає бот DimkaVerbatim! Для передачі показань оберіть послугу." );
+        jsonPattern.put("text", "Привіт "+ senderName + ", Вас вітає бот DimkaVerbatim! Для передачі показань оберіть послугу." );
         jsonPattern.put("type", "text");
         jsonPattern.put("tracking_data","start conversation");
         jsonPattern.put("keyboard",new JsonPatterns().getJsonPatternBtnChoseServices());
