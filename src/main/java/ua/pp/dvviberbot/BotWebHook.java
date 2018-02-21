@@ -68,10 +68,10 @@ public class BotWebHook extends HttpServlet {
                 else if (eventParam.equals("conversation_started")){
 
                     if (!jsonRequst.getJSONObject("user").isNull("name")){
-                        jsonRequst.getJSONObject("user").getString("name");
+                        msgSenderName = jsonRequst.getJSONObject("user").getString("name");
                     }
                     if (!jsonRequst.getJSONObject("user").isNull("id")) {
-                        jsonRequst.getJSONObject("user").getString("id");
+                        msgSenderId = jsonRequst.getJSONObject("user").getString("id");
                     }
 
                     jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
@@ -90,10 +90,10 @@ public class BotWebHook extends HttpServlet {
                     String msgText = jsonRequst.getJSONObject("message").getString("text");
 
                     if (!jsonRequst.getJSONObject("sender").isNull("name")){
-                        jsonRequst.getJSONObject("sender").getString("name");
+                        msgSenderName = jsonRequst.getJSONObject("sender").getString("name");
                     }
                     if (!jsonRequst.getJSONObject("sender").isNull("id")) {
-                        jsonRequst.getJSONObject("sender").getString("id");
+                        msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     }
 
                     String msgTrackingData = "";
