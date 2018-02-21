@@ -65,12 +65,8 @@ public class BotWebHook extends HttpServlet {
                 else if (eventParam.equals("conversation_started")){
                     String msgSenderId = jsonRequst.getJSONObject("user").getString("id");
                     String msgSenderName = jsonRequst.getJSONObject("user").getString("name");
-                    // here goes the data to send message back to the user
-                    jsonResponse.put("receiver", msgSenderId);
-                    jsonResponse.put("text", "Привіт, "+ msgSenderName + "! Вас вітає бот DimkaVerbatim! Для передачі показань оберіть послугу." );
-                    jsonResponse.put("type", "text");
-                    jsonResponse.put("tracking_data","start conversation");
-                    jsonResponse.put("keyboard",jsonPatterns.getJsonPatternChoseServices());
+
+                    jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
 
                     /* here need send answer for viber */
                     String strRusult = sendMessage(jsonResponse.toString());
@@ -111,9 +107,13 @@ public class BotWebHook extends HttpServlet {
                             jsonResponse.put("tracking_data", msgTrackingData);
                         }
                     }
+                    else if (msgText.toLowerCase().equals("start")){
+                        jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
+                    }
                     else {
                         jsonResponse.put("text", "Шановний клієнт, " + msgSenderName+ ". Робота з іншими командами в розробці! Ви нам надіслали: " + msgText);
                         jsonResponse.put("tracking_data", "other command");
+                        jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                     }
                     jsonResponse.put("type", "text");
 
