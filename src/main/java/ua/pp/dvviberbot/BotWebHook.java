@@ -108,16 +108,17 @@ public class BotWebHook extends HttpServlet {
                     listServices.add("ГВП");
                     listServices.add("ЦО");
                     if (listServices.contains(msgText)) {
-                        jsonResponse.put("text", "Введіть, будь ласка, № особового рахунку по послузі " + msgText + ". У форматі ###############");
+                        jsonResponse.put("text", "Введіть, будь ласка, № ОР по послузі " + msgText + ". ОР це 15 цифр з квитанції");
                         jsonResponse.put("tracking_data", "send or <" + msgTrackingData + ">");
                     }
                     else if (msgTrackingData.startsWith("send or <")) {
                         if (msgText.matches("[0-9]{15}")) {
-                            jsonResponse.put("text", "Шановний " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна. :-( Реалізація в розробці!");
+                            jsonResponse.put("text", "Шановний " + msgSenderName + ". Інформація по ОР " + msgText + ", на даний момент не доступна! :-(");
                             jsonResponse.put("tracking_data", " bad or");
+                            jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnStart());
                         }
                         else {
-                            jsonResponse.put("text", "Ви вказали ОР не вірного формату! Формат ОР 15 чисел. ОР присутній в квитанції на сплату. Введіть коректний ОР повторно.");
+                            jsonResponse.put("text", "Ви вказали ОР не вірного формату! Формат ОР 15 цифр. Введіть коректний ОР повторно.");
                             jsonResponse.put("tracking_data", msgTrackingData);
                         }
                     }
@@ -150,6 +151,7 @@ public class BotWebHook extends HttpServlet {
 
         } catch (JSONException e) {
             // crash and burn
+            System.out.println(jb.toString());
             throw new IOException("Error parsing JSON request string");
         }
 
