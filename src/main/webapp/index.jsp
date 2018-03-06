@@ -1,82 +1,50 @@
-<%@ page contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<%@page import="java.sql.*, javax.sql.*, javax.naming.*"%>
+<%--
+  Created by IntelliJ IDEA.
+  User: Dimka
+  Date: 01.03.2018
+  Time: 15:38
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE HTML>
 <html lang="ukr">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Dimkaverbatim viber bot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Viber bot">
+    <meta name="author" content="Ternavskiy Dmytro">
+    <link rel="icon" href="../images/appico.ico">
+
+    <!-- Bootstrap core CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/signin.css" rel="stylesheet">
+    <title>Viber bot DimkaVerbatim</title>
 </head>
-<body>
-<h1>Viber Bot</h1>
-<b>Hello for everyone! It will be my the first bot on java.</b>
-<%
-    DataSource ds = null;
-    Connection conn = null;
-    ResultSet result = null;
-    Statement stmt = null;
-    ResultSetMetaData rsmd = null;
-    try{
-        Context context = new InitialContext();
-        Context envCtx = (Context) context.lookup("java:comp/env");
-        ds =  (DataSource)envCtx.lookup("jdbc/dvviberbotdb");
-        if (ds != null) {
-            conn = ds.getConnection();
-            stmt = conn.createStatement();
-            result = stmt.executeQuery("SELECT * FROM senders");
-        }
-    }
-    catch (SQLException e) {
-        System.out.println("Error occurred " + e);
-    }
-    int columns=0;
-    try {
-        rsmd = result.getMetaData();
-        columns = rsmd.getColumnCount();
-    }
-    catch (SQLException e) {
-        System.out.println("Error occurred " + e);
-    }
-%>
-<table width="90%" border="1">
-    <tr>
-        <% // write out the header cells containing the column labels
-            try {
-                for (int i=1; i<=columns; i++) {
-                    out.print("<th>" + rsmd.getColumnLabel(i) + "</th>");
-                }
+<body class="text-center">
+<% if (session.getAttribute("loggedInUser") != null) { %>
+<% response.sendRedirect("main.jsp");%>
+<% } %>
+    <form class="form-signin" action="logincontroler" method="post">
+        <img class="mb-4" src="../images/logo_without_text.png" alt="" width="100" height="100">
+        <h1 type="header" class="h3 mb-3 font-weight-bold">Авторизуйтесь</h1>
+        <%
+            String login_msg=(String)request.getAttribute("errorMessage");
+            if(login_msg!=null)
+                out.println("<p class=\"text-danger\">" + request.getAttribute("errorMessage") + "</p>");
         %>
-    </tr>
-    <% // now write out one row for each entry in the database table
-        while (result.next()) {
-            out.write("<tr>");
-            for (int i=1; i<=columns; i++) {
-                out.write("<td>" + result.getString(i) + "</td>");
-            }
-            out.write("</tr>");
-        }
-
-        // close the connection, resultset, and the statement
-        result.close();
-        stmt.close();
-        conn.close();
-    } // end of the try block
-    catch (SQLException e) {
-        System.out.println("Error " + e);
-    }
-    // ensure everything is closed
-    finally {
-        try {
-            if (stmt != null)
-                stmt.close();
-        }  catch (SQLException e) {}
-        try {
-            if (conn != null)
-                conn.close();
-        } catch (SQLException e) {}
-    }
-
-    %>
-</table>
+        <label for="inputEmail" class="sr-only">E-mail</label>
+        <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="E-mail" required autofocus>
+        <label for="inputPassword" class="sr-only">Пароль</label>
+        <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Пароль" required>
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" value="remember-me"> Запам'ятати
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Вхід</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2018</p>
+    </form>
 </body>
 </html>

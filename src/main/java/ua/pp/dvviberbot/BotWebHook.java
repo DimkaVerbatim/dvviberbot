@@ -7,22 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BotWebHook extends HttpServlet {
 
-    private final String secretKey = "47659e83e627d6c7-131d26b96d02cf8d-df57301eeea40afb";
     private boolean bCorrectSignature = false;
     private JsonPatterns jsonPatterns = new JsonPatterns();
     private List<String> listServices = new ArrayList<String>();
+    private ViberComunicator viberCom = new ViberComunicator();
 
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -44,19 +41,21 @@ public class BotWebHook extends HttpServlet {
             JSONObject jsonRequst = new JSONObject(s);
             JSONObject jsonResponse = new JSONObject();
 
-            ViberSignatureValidator viberSignatureValidator = new ViberSignatureValidator(secretKey);
-            if (viberSignatureValidator.isSignatureValid(signature, jb.toString())) {
-                bCorrectSignature = true;
-            }
+            bCorrectSignature = viberCom.isValidateSinature(signature, jb.toString());
 
             if (!jsonRequst.isNull("event") && bCorrectSignature){
 
-                response.setHeader("X-Viber-Auth-Token", secretKey);
+                response.setHeader("X-Viber-Auth-Token", viberCom.getViberToken());
                 response.setHeader("Content-Type", "application/json");
+
                 String eventParam = jsonRequst.getString("event");
 
                 String msgSenderId = "";
                 String msgSenderName = "клієнте";
+                String msgSenderAvatar = null;
+                String msgSenderCountry = null;
+                String msgSenderLanguage = null;
+                int msgSenderApi = 1;
 
                 /*check what event come from viber*/
                 if (eventParam.equals("webhook")) {
@@ -77,7 +76,7 @@ public class BotWebHook extends HttpServlet {
                     jsonResponse = jsonPatterns.getJsonPatternStartConversation(msgSenderId, msgSenderName);
 
                     /* here need send answer for viber */
-                    String strRusult = sendMessage(jsonResponse.toString());
+                    String strRusult = viberCom.sendMessage(jsonResponse.toString());
 
                     /* send answer*/
                     jsonResponse = new JSONObject(strRusult);
@@ -95,11 +94,26 @@ public class BotWebHook extends HttpServlet {
                     if (!jsonRequst.getJSONObject("sender").isNull("id")) {
                         msgSenderId = jsonRequst.getJSONObject("sender").getString("id");
                     }
+                    if (!jsonRequst.getJSONObject("sender").isNull("avatar")) {
+                        msgSenderAvatar = jsonRequst.getJSONObject("sender").getString("avatar");
+                    }
+                    if (!jsonRequst.getJSONObject("sender").isNull("country")) {
+                        msgSenderCountry = jsonRequst.getJSONObject("sender").getString("country");
+                    }
+                    if (!jsonRequst.getJSONObject("sender").isNull("language")) {
+                        msgSenderLanguage = jsonRequst.getJSONObject("sender").getString("language");
+                    }
+                    if (!jsonRequst.getJSONObject("sender").isNull("api_version")) {
+                        msgSenderApi = jsonRequst.getJSONObject("sender").getInt("api_version");
+                    }
 
                     String msgTrackingData = "";
                     if (!jsonRequst.getJSONObject("message").isNull("tracking_data")) {
                         msgTrackingData = jsonRequst.getJSONObject("message").getString("tracking_data");
                     }
+                    
+                    Sender sender = new Sender(msgSenderName, msgSenderId, msgSenderAvatar, msgSenderCountry, msgSenderLanguage, msgSenderApi);
+                    sender.insertIntoDB();
 
                     // here goes the data to send message back to the user
                     jsonResponse.put("receiver", msgSenderId);
@@ -132,7 +146,7 @@ public class BotWebHook extends HttpServlet {
                     }
 
                     /* here need send answer for viber */
-                    String strRusult = sendMessage(jsonResponse.toString());
+                    String strRusult = viberCom.sendMessage(jsonResponse.toString());
 
                     /* send answer*/
                     jsonResponse = new JSONObject(strRusult);
@@ -155,43 +169,6 @@ public class BotWebHook extends HttpServlet {
             throw new IOException("Error parsing JSON request string");
         }
 
-    }
-    private String sendMessage(String textMessage) throws IOException {
-        final String resourceURL = "https://chatapi.viber.com/pa/send_message";
-        // init connection
-        URL url = new URL(resourceURL);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-        //  set request method
-        con.setRequestMethod("POST");
-
-        // CURLOPT_FOLLOWLOCATION
-        con.setInstanceFollowRedirects(true);
-        con.setRequestProperty("Content-length", String.valueOf(textMessage.length()));
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("X-Viber-Auth-Token", secretKey);
-        con.setDoOutput(true);
-        con.setDoInput(true);
-
-        DataOutputStream output = new DataOutputStream(con.getOutputStream());
-        /*change charset*/
-        String s = new String(textMessage.getBytes("UTF-8"), "ISO-8859-1");
-        output.writeBytes(s);
-        output.close();
-
-        // "Post data send ... waiting for reply");
-        int code = con.getResponseCode(); // 200 = HTTP_OK
-
-        // read the response
-        DataInputStream input = new DataInputStream(con.getInputStream());
-        int c;
-        StringBuilder resultBuf = new StringBuilder();
-        while ( (c = input.read()) != -1) {
-            resultBuf.append((char) c);
-        }
-        input.close();
-
-        return resultBuf.toString();
     }
 
 }
