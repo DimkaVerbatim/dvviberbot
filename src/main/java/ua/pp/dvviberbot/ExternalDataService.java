@@ -22,7 +22,20 @@ public class ExternalDataService {
         String url;
         url = webServProp.getProperty("URL-CO-GVP-API") + "/getAbonentInfoByLC";
         try {
-            return getPostWebServise(url, "lc="+lc+"&usl="+usl, webServProp.getProperty("Auth-Token-CO-GVP"),"X-API-Auth-Token");
+            return "{data:"+getPostWebServise(url, "lc="+lc+"&usl="+usl, webServProp.getProperty("Auth-Token-CO-GVP"),"X-API-Auth-Token")+"}";
+        }
+        catch (IOException ex){
+            System.out.println("Error get webservices" + ex.getMessage());
+            return "";
+        }
+    }
+    public String setCounterDataBitek (String lc, String usl, int counterId, double currentPokaz, double priPokaz) {
+        String url;
+        url = webServProp.getProperty("URL-CO-GVP-API") + "/setCountersDataOtherSource";
+        try {
+            return "{data:"+getPostWebServise(url,
+                                    "uslName=" + usl + "&lc=" + lc + "&counterId=" + counterId + "&currentPokaz=" + currentPokaz +"&priPokaz=" + priPokaz,
+                                    webServProp.getProperty("Auth-Token-CO-GVP"),"X-API-Auth-Token")+"}";
         }
         catch (IOException ex){
             System.out.println("Error get webservices" + ex.getMessage());

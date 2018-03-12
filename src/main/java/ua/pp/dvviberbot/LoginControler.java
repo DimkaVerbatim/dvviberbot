@@ -1,5 +1,7 @@
 package ua.pp.dvviberbot;
 
+import org.json.JSONObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
