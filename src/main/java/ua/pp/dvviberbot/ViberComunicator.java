@@ -27,6 +27,7 @@ public class ViberComunicator {
     }
     public String sendMessage(String textMessage) throws IOException {
         final String resourceURL = "https://chatapi.viber.com/pa/send_message";
+        String result = null;
         // init connection
         URL url = new URL(resourceURL);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -51,15 +52,18 @@ public class ViberComunicator {
         // "Post data send ... waiting for reply");
         int code = con.getResponseCode(); // 200 = HTTP_OK
 
-        // read the response
-        DataInputStream input = new DataInputStream(con.getInputStream());
-        int c;
-        StringBuilder resultBuf = new StringBuilder();
-        while ( (c = input.read()) != -1) {
-            resultBuf.append((char) c);
+        if (code == 200) {
+            // read the response
+            DataInputStream input = new DataInputStream(con.getInputStream());
+            int c;
+            StringBuilder resultBuf = new StringBuilder();
+            while ((c = input.read()) != -1) {
+                resultBuf.append((char) c);
+            }
+            input.close();
+            result = resultBuf.toString();
         }
-        input.close();
 
-        return resultBuf.toString();
+        return result;
     }
 }

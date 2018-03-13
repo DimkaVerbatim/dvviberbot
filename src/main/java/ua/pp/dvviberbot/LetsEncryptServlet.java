@@ -1,6 +1,5 @@
 package ua.pp.dvviberbot;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +15,7 @@ public class LetsEncryptServlet extends HttpServlet {
     private static final String PATH = "/WEB-INF/letsencrypt/";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String uri = req.getRequestURI();
 
         if (!uri.startsWith("/.well-known/acme-challenge/")) {

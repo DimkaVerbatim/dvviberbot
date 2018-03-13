@@ -6,7 +6,7 @@ import org.json.JSONObject;
 public class JsonPatterns {
     private JSONObject jsonPattern = new JSONObject();
 
-    public JSONObject getJsonPatternBtnChooseServices() {
+    private JSONObject getJsonPatternBtnChooseServices() {
         JSONArray jsonArrayButtons = new JSONArray();
         JSONObject firstBtnGVP = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ГВП\", \"Text\": \"ГВП\", \"TextSize\": \"regular\"}");
         JSONObject firstBtnCO = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ЦО\", \"Text\": \"ЦО\", \"TextSize\": \"regular\"}");
@@ -36,6 +36,8 @@ public class JsonPatterns {
                         + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("LASTPOKAZ")
                         + ";"
                         + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE")
+                        + ";"
+                        + jsonCounters.getJSONArray("data").getJSONObject(i).getString("KOEFPOKAZ")
                         + "\","
                     + " \"Text\": \""+jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")+"\","
                     + " \"TextSize\": \"regular\"}");
@@ -65,7 +67,7 @@ public class JsonPatterns {
 
         jsonArrayButtons.put(firstBtnAddOR);
         jsonArrayButtons.put(firstBtnChooseOR);
-
+        jsonArrayButtons.put(getJsonPatternBtnBack());
         jsonPattern.put("Buttons", jsonArrayButtons);
         return jsonPattern;
     }
@@ -85,6 +87,7 @@ public class JsonPatterns {
                     + " \"TextSize\": \"regular\"}");
             jsonArrayButtons.put(firstBtnOR);
         }
+        jsonArrayButtons.put(getJsonPatternBtnBack());
         jsonPattern.put("Buttons", jsonArrayButtons);
         return jsonPattern;
     }
@@ -96,5 +99,8 @@ public class JsonPatterns {
         jsonPattern.put("keyboard",new JsonPatterns().getJsonPatternBtnChooseServices());
 
         return jsonPattern;
+    }
+    private JSONObject getJsonPatternBtnBack(){
+        return new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"back\", \"Text\": \"Назад\", \"TextSize\": \"regular\"}");
     }
 }

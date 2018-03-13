@@ -92,8 +92,6 @@ public class Sender {
             int affectedRows = pstmt.executeUpdate();
             pstmt.close();
             conn.close();
-            conn=null;
-            pstmt=null;
 
         }
         catch (SQLException e){
@@ -130,12 +128,8 @@ public class Sender {
             }
             json.put("Accounts",jsonArray);
             rs.close();
-            rs = null;
             pstmt.close();
-            pstmt = null;
             conn.close();
-            conn = null;
-
         }
         catch (SQLException e){
             System.out.println(e.getMessage());
@@ -165,12 +159,8 @@ public class Sender {
 
             ResultSet rs = pstmt.executeQuery();
             rs.close();
-            rs = null;
             pstmt.close();
-            pstmt = null;
             conn.close();
-            conn = null;
-
         }
         catch (SQLException e){
             System.out.println(e.getMessage());

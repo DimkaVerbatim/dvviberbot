@@ -1,7 +1,5 @@
 package ua.pp.dvviberbot;
 
-import org.json.JSONObject;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +12,10 @@ import java.sql.ResultSet;
 public class LoginControler extends HttpServlet {
     @Override
     public void doGet (HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
+        ExternalDataService externalDataService = new ExternalDataService();
+        String res = externalDataService.setCounterDataBitek("164152500010100","ГВП",119728,11113,11112.00);
+        System.out.println(res);
         response.setContentType("text/html;charset=UTF-8");
         try(PrintWriter out = response.getWriter()){
             String SQL = "Select * from siteusers where email=? and paswd=?";
