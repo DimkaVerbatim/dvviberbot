@@ -93,7 +93,10 @@ public class BotWebHook extends HttpServlet {
                         jsonResponse.put("tracking_data", "choose or;" + viberMsg.getMessageText());
 
                     }
+                    else if (viberMsg.getMessageText().toLowerCase().equals("start")){
+                        jsonResponse = jsonPatterns.getJsonPatternStartConversation(viberMsg.getSenderId(), viberMsg.getSenderName());
 
+                    }
                     else if (viberMsg.getMessageTrackingData().startsWith("choose or;")) {
                         //Take param from previous message
                         String [] strParam;
@@ -111,7 +114,7 @@ public class BotWebHook extends HttpServlet {
                                 jsonResponse.put("tracking_data", "send or;" + strParam[1]);
                             }
                             else{
-                                jsonResponse.put("text", "Відсудсутні збережені О/Р, додайте О/Р по послузі " + strParam[1] + ":");
+                                jsonResponse.put("text", "Відсутні збережені О/Р, натисніть кнопку \"Додати О/Р\" по послузі " + strParam[1] + ":");
                                 jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnOR());
                                 jsonResponse.put("tracking_data", "choose or;" + strParam[1]);
                             }
@@ -127,7 +130,7 @@ public class BotWebHook extends HttpServlet {
                         strParam = viberMsg.getMessageTrackingData().split(";");
                         // CHOOSE COUNTER OR INPUT COUNTER DATA
                         if (viberMsg.getMessageText().equals("back")){
-                            jsonResponse.put("text", "Оберіть або додайте № О/Р по послузі " + viberMsg.getMessageText() + ":");
+                            jsonResponse.put("text", "Оберіть або додайте № О/Р по послузі " + strParam[1] + ":");
                             jsonResponse.put("keyboard",jsonPatterns.getJsonPatternBtnOR());
                             jsonResponse.put("tracking_data", "choose or;" + strParam[1]);
                         }
@@ -152,14 +155,15 @@ public class BotWebHook extends HttpServlet {
                                                 + viberMsg.getMessageText() + ";"
                                                 + jsonResultServ.getJSONArray("data").getJSONObject(0).getInt("COUNTERID") + ";"
                                                 + jsonResultServ.getJSONArray("data").getJSONObject(0).getDouble("LASTPOKAZ") + ";"
-                                                + jsonResultServ.getJSONArray("data").getJSONObject(0).getDouble("KOEFPOKAZ"));
+                                                + jsonResultServ.getJSONArray("data").getJSONObject(0).getDouble("KOEFPOKAZ") + ";"
+                                                + counterCount);
                                     } else if (counterCount > 1) {
                                         sender.addAccount(strParam[1], viberMsg.getMessageText());
                                         String msgForAnswer = "Адреса: "
                                                 + jsonResultServ.getJSONArray("data").getJSONObject(0).getString("FULLADRESS")
                                                 + "\nВиберіть номер лічильника згідно квитанції:";
                                         jsonResponse.put("text", msgForAnswer);
-                                        jsonResponse.put("tracking_data", "choose cnt;" + strParam[1] + ";" + viberMsg.getMessageText());
+                                        jsonResponse.put("tracking_data", "choose cnt;" + strParam[1] + ";" + viberMsg.getMessageText() + ";" + counterCount);
                                         jsonResponse.put("keyboard", jsonPatterns.getJsonPatternBtnChooseCounter(jsonResultServ));
 
                                     } else {
@@ -192,7 +196,7 @@ public class BotWebHook extends HttpServlet {
                                 + " на " + strParam[3]
                                 + "\nВведіть поточні показання:";
                         jsonResponse.put("text", msgForAnswer);
-                        jsonResponse.put("tracking_data", "send cnt;" + strParamTracking[1] + ";" + strParamTracking[2] + ";" + strParam[1] + ";" + strParam[2] + ";" + strParam[4]);
+                        jsonResponse.put("tracking_data", "send cnt;" + strParamTracking[1] + ";" + strParamTracking[2] + ";" + strParam[1] + ";" + strParam[2] + ";" + strParam[4] + ";" + strParamTracking[3]);
 
                     }
                     else if (viberMsg.getMessageTrackingData().startsWith("send cnt;")) {
@@ -221,21 +225,26 @@ public class BotWebHook extends HttpServlet {
                                         JSONObject jsonResultServ = new JSONObject(resultServ);
                                         jsonResponse.put("text", "Результат: \n"
                                                 + jsonResultServ.getJSONArray("data").getJSONObject(0).getString("msg"));
-                                        jsonResponse.put("tracking_data", "send result");
-                                        jsonResponse.put("keyboard", jsonPatterns.getJsonPatternBtnStart());
+                                        if (Integer.valueOf(strParamTracking[6])> 1) {
+                                            jsonResponse.put("tracking_data", "send or;"+strParamTracking[1]);
+                                            jsonResponse.put("keyboard", jsonPatterns.getJsonPatternBtnStart(strParamTracking[2]));
+                                        }
+                                        else {
+                                            jsonResponse.put("tracking_data", "send result");
+                                            jsonResponse.put("keyboard", jsonPatterns.getJsonPatternBtnStart());
+                                        }
+
                                     }
                                     else {
                                         jsonResponse.put("text", "Результат передачі невдалий!");
                                         jsonResponse.put("tracking_data", "send result");
                                         jsonResponse.put("keyboard", jsonPatterns.getJsonPatternBtnStart());
                                     }
-
                                 }
                                 else {
                                     jsonResponse.put("text", "Вказано показник занадто великого значення. Внесіть менший показник:");
                                     jsonResponse.put("tracking_data", viberMsg.getMessageTrackingData());
                                 }
-
                             }
                         }
                         else
@@ -246,10 +255,6 @@ public class BotWebHook extends HttpServlet {
                         }
 
                     }
-                    else if (viberMsg.getMessageText().toLowerCase().equals("start")){
-                        jsonResponse = jsonPatterns.getJsonPatternStartConversation(viberMsg.getSenderId(), viberMsg.getSenderName());
-
-                    }
                     else {
                         jsonResponse.put("text", "Шановний(a) " + viberMsg.getSenderName() + ". Робота з іншими командами в розробці! Ви нам надіслали: " + viberMsg.getMessageText());
                         jsonResponse.put("tracking_data", "other command");
@@ -257,10 +262,10 @@ public class BotWebHook extends HttpServlet {
                     }
 
                     /* here need send answer for viber */
-                    String strRusult = viberCom.sendMessage(jsonResponse.toString());
+                    String strResult = viberCom.sendMessage(jsonResponse.toString());
 
                     /* send answer*/
-                    jsonResponse = new JSONObject(strRusult);
+                    jsonResponse = new JSONObject(strResult);
                 }
                 else {
                     jsonResponse.put("result", "this event not implemented");

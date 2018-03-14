@@ -10,11 +10,23 @@ public class JsonPatterns {
         JSONArray jsonArrayButtons = new JSONArray();
         JSONObject firstBtnGVP = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ГВП\", \"Text\": \"ГВП\", \"TextSize\": \"regular\"}");
         JSONObject firstBtnCO = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ЦО\", \"Text\": \"ЦО\", \"TextSize\": \"regular\"}");
+        /*JSONObject testBtn = new JSONObject("{\n" +
+                "            \"Columns\":2,\n" +
+                "            \"BgColor\":\"#e2e7e7\",\n" +
+                "            \"Rows\":1,\n" +
+                "            \"ActionType\":\"reply\",\n" +
+                "            \"ActionBody\":\"https://www.google.com\",\n" +
+                "            \"Text\":\"<font color=#8367db>MORE DETAILS</font>\",\n" +
+                "            \"TextSize\":\"small\",\n" +
+                "            \"TextVAlign\":\"middle\",\n" +
+                "            \"TextHAlign\":\"middle\"\n" +
+                "         }");*/
         jsonPattern.put("Type", "keyboard");
-        jsonPattern.put("DefaultHeight", true);
+        jsonPattern.put("DefaultHeight", false);
 
         jsonArrayButtons.put(firstBtnGVP);
         jsonArrayButtons.put(firstBtnCO);
+        //jsonArrayButtons.put(testBtn);
 
         jsonPattern.put("Buttons", jsonArrayButtons);
 
@@ -24,7 +36,7 @@ public class JsonPatterns {
         // add btn counters if we have more than one counter
         JSONArray jsonArrayButtons = new JSONArray();
         jsonPattern.put("Type", "keyboard");
-        jsonPattern.put("DefaultHeight", true);
+        jsonPattern.put("DefaultHeight", false);
         int cntCounters = jsonCounters.getJSONArray("data").length();
         for (int i=0; i<cntCounters; i++){
             JSONObject firstBtnCnt = new JSONObject("{"
@@ -37,7 +49,7 @@ public class JsonPatterns {
                         + ";"
                         + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE")
                         + ";"
-                        + jsonCounters.getJSONArray("data").getJSONObject(i).getString("KOEFPOKAZ")
+                        + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("KOEFPOKAZ")
                         + "\","
                     + " \"Text\": \""+jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")+"\","
                     + " \"TextSize\": \"regular\"}");
@@ -48,11 +60,17 @@ public class JsonPatterns {
         return jsonPattern;
     }
     public JSONObject getJsonPatternBtnStart() {
+        return getJsonPatternBtnStart("");
+    }
+    public JSONObject getJsonPatternBtnStart(String addBtnBackActionBody) {
         JSONArray jsonArrayButtons = new JSONArray();
         JSONObject firstBtnStart = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"start\", \"Text\": \"Спочатку\", \"TextSize\": \"regular\"}");
         jsonPattern.put("Type", "keyboard");
-        jsonPattern.put("DefaultHeight", true);
+        jsonPattern.put("DefaultHeight", false);
         jsonArrayButtons.put(firstBtnStart);
+        if (!addBtnBackActionBody.equals("")){
+            jsonArrayButtons.put(getJsonPatternBtnBack(addBtnBackActionBody));
+        }
 
         jsonPattern.put("Buttons", jsonArrayButtons);
 
@@ -63,7 +81,7 @@ public class JsonPatterns {
         JSONObject firstBtnAddOR = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"add_or\", \"Text\": \"Додати О/Р\", \"TextSize\": \"regular\"}");
         JSONObject firstBtnChooseOR = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"choose_or\", \"Text\": \"Мої О/Р\", \"TextSize\": \"regular\"}");
         jsonPattern.put("Type", "keyboard");
-        jsonPattern.put("DefaultHeight", true);
+        jsonPattern.put("DefaultHeight", false);
 
         jsonArrayButtons.put(firstBtnAddOR);
         jsonArrayButtons.put(firstBtnChooseOR);
@@ -75,7 +93,7 @@ public class JsonPatterns {
         // add btn OR
         JSONArray jsonArrayButtons = new JSONArray();
         jsonPattern.put("Type", "keyboard");
-        jsonPattern.put("DefaultHeight", true);
+        jsonPattern.put("DefaultHeight", false);
         int cntOR = jsonListOR.getJSONArray("Accounts").length();
         for (int i=0; i<cntOR; i++){
             JSONObject firstBtnOR = new JSONObject("{"
@@ -100,7 +118,10 @@ public class JsonPatterns {
 
         return jsonPattern;
     }
+    private JSONObject getJsonPatternBtnBack(String actionBoby){
+        return new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \""+actionBoby+"\", \"Text\": \"Назад\", \"TextSize\": \"regular\"}");
+    }
     private JSONObject getJsonPatternBtnBack(){
-        return new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"back\", \"Text\": \"Назад\", \"TextSize\": \"regular\"}");
+        return getJsonPatternBtnBack("back");
     }
 }

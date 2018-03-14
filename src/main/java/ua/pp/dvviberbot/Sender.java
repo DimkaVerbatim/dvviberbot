@@ -3,10 +3,7 @@ package ua.pp.dvviberbot;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Sender {
     public Sender(String cName, String id) {
@@ -74,9 +71,9 @@ public class Sender {
 
     }
     public void insertIntoDB() {
-        String SQL = "INSERT INTO senders(id,name,avatar,country,language,\tapi_version) "
-                + "VALUES(?,?,?,?,?,?) ON CONFLICT (id) " +
-                "DO NOTHING";
+        String SQL = "INSERT INTO senders(id,name,avatar,country,language,\tapi_version,lastconn) "
+                + "VALUES(?,?,?,?,?,?,?) ON CONFLICT (id) " +
+                "DO UPDATE SET lastconn = Excluded.lastconn";
         DbConection dbConection = new DbConection();
         Connection conn = dbConection.getConnection();
         PreparedStatement pstmt;
@@ -88,6 +85,7 @@ public class Sender {
             pstmt.setString(4, this.getCountry());
             pstmt.setString(5, this.getLanguage());
             pstmt.setInt(6, this.getApi_version());
+            pstmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
 
             int affectedRows = pstmt.executeUpdate();
             pstmt.close();
