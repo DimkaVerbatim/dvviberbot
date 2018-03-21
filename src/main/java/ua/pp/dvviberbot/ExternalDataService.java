@@ -18,10 +18,9 @@ public class ExternalDataService {
             System.out.println("Error reading properties "+ex.getMessage());
         }
     }
-    public String getLCCounterInfoBitek (String lc, String usl) {
-        String url;
+    private String getDataLCFromUrl(String url, String lc, String usl){
         String resultExec = "{\"data\":}";
-        url = webServProp.getProperty("URL-CO-GVP-API") + "/getAbonentInfoByLC";
+        url = webServProp.getProperty("URL-CO-GVP-API") + "/" + url;
         try {
             resultExec = "{\"data\":"+getPostWebServise(url, "lc="+lc+"&usl="+usl, webServProp.getProperty("Auth-Token-CO-GVP"),"X-API-Auth-Token")+"}";
             return resultExec;
@@ -31,13 +30,43 @@ public class ExternalDataService {
             return resultExec;
         }
     }
-    public String setCounterDataBitek (String lc, String usl, int counterId, double currentPokaz, double priPokaz) {
+    public String getLCCounterInfoBitek (String lc, String usl) {
+        return getDataLCFromUrl("getAbonentInfoByLC", lc, usl);
+    }
+    public String getAbonentAddressInfoBitek (String lc, String usl) {
+        return getDataLCFromUrl("getAbonentAddressFromLC", lc, usl);
+    }
+    public String getLCAbonentMonthsInfoBitek (String lc, String usl) {
+        return getDataLCFromUrl("getAbonentInfoMonthsByLCUSL", lc, usl);
+    }
+    public String setCounterDataBitek (String lc,
+                                       String usl,
+                                       int counterId,
+                                       double currentPokaz1,
+                                       double priPokaz1,
+                                       double currentPokaz2,
+                                       double priPokaz2,
+                                       double currentPokaz3,
+                                       double priPokaz3,
+                                       double currentPokaz4,
+                                       double priPokaz4
+    ) {
         String url;
         url = webServProp.getProperty("URL-CO-GVP-API") + "/setCountersDataOtherSource";
         String resultExec = "{\"data\":}";
         try {
             resultExec = "{\"data\":"+getPostWebServise(url,
-                    "uslName=" + usl + "&lc=" + lc + "&counterId=" + counterId + "&currentPokaz=" + currentPokaz +"&priPokaz=" + priPokaz,
+                    "uslName=" + usl
+                            + "&lc=" + lc
+                            + "&counterId=" + counterId
+                            + "&currentPokaz1=" + currentPokaz1
+                            +"&priPokaz1=" + priPokaz1
+                            + "&currentPokaz2=" + currentPokaz2
+                            +"&priPokaz2=" + priPokaz2
+                            + "&currentPokaz3=" + currentPokaz3
+                            +"&priPokaz3=" + priPokaz3
+                            + "&currentPokaz4=" + currentPokaz4
+                            +"&priPokaz4=" + priPokaz4,
                     webServProp.getProperty("Auth-Token-CO-GVP"),"X-API-Auth-Token")+"}";
             return resultExec;
         }

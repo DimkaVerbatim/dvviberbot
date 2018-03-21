@@ -54,7 +54,9 @@ public class ViberMessage {
     public String getMessageText() {
         return messageText;
     }
-
+    public void setMessageText(String messageText){
+        this.messageText = messageText;
+    }
     public String getSenderName() {
         return senderName;
     }
@@ -81,6 +83,10 @@ public class ViberMessage {
 
     public String getMessageTrackingData() {
         return messageTrackingData;
+    }
+
+    public void setMessageTrackingData(String messageTrackingData){
+        this.messageTrackingData =messageTrackingData;
     }
 
     public JSONObject getMessage() {

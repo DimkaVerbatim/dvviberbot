@@ -10,38 +10,113 @@ public class JsonPatterns {
         JSONArray jsonArrayButtons = new JSONArray();
         JSONObject firstBtnGVP = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ГВП\", \"Text\": \"ГВП\", \"TextSize\": \"regular\"}");
         JSONObject firstBtnCO = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"ЦО\", \"Text\": \"ЦО\", \"TextSize\": \"regular\"}");
-        /*JSONObject testBtn = new JSONObject("{\n" +
-                "            \"Columns\":2,\n" +
-                "            \"BgColor\":\"#e2e7e7\",\n" +
-                "            \"Rows\":1,\n" +
-                "            \"ActionType\":\"reply\",\n" +
-                "            \"ActionBody\":\"https://www.google.com\",\n" +
-                "            \"Text\":\"<font color=#8367db>MORE DETAILS</font>\",\n" +
-                "            \"TextSize\":\"small\",\n" +
-                "            \"TextVAlign\":\"middle\",\n" +
-                "            \"TextHAlign\":\"middle\"\n" +
-                "         }");*/
+
         jsonPattern.put("Type", "keyboard");
         jsonPattern.put("DefaultHeight", false);
 
         jsonArrayButtons.put(firstBtnGVP);
         jsonArrayButtons.put(firstBtnCO);
-        //jsonArrayButtons.put(testBtn);
+
 
         jsonPattern.put("Buttons", jsonArrayButtons);
 
         return jsonPattern;
     }
+
+    public JSONObject getJsonPatternBtnReportOrCounter() {
+        JSONArray jsonArrayButtons = new JSONArray();
+        JSONObject btnSendCounter = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"sendcounter\", \"Text\": \"Передати показники\", \"TextSize\": \"regular\"}");
+        JSONObject btnReport = new JSONObject("{\"ActionType\": \"reply\", \"ActionBody\": \"reportofpays\", \"Text\": \"Звіт про оплату\", \"TextSize\": \"regular\"}");
+
+        jsonPattern.put("Type", "keyboard");
+        jsonPattern.put("DefaultHeight", false);
+
+        jsonArrayButtons.put(btnSendCounter);
+        jsonArrayButtons.put(btnReport);
+        jsonArrayButtons.put(getJsonPatternBtnBack());
+
+        jsonPattern.put("Buttons", jsonArrayButtons);
+        return jsonPattern;
+    }
+
+    public JSONObject getJsonPatternBtnBackMenu(String textActionBody) {
+        JSONArray jsonArrayButtons = new JSONArray();
+
+        jsonPattern.put("Type", "keyboard");
+        jsonPattern.put("DefaultHeight", false);
+
+        jsonArrayButtons.put(getJsonPatternBtnBack(textActionBody));
+
+        jsonPattern.put("Buttons", jsonArrayButtons);
+        return jsonPattern;
+    }
+
     public JSONObject getJsonPatternBtnChooseCounter(JSONObject jsonCounters) {
         // add btn counters if we have more than one counter
         JSONArray jsonArrayButtons = new JSONArray();
         jsonPattern.put("Type", "keyboard");
         jsonPattern.put("DefaultHeight", false);
         int cntCounters = jsonCounters.getJSONArray("data").length();
+        int cntCounterMult = 1;
+        int cntMultLocalPokaz = 0;
+        String actionBodyMult = "cntmulti";
         for (int i=0; i<cntCounters; i++){
-            JSONObject firstBtnCnt = new JSONObject("{"
-                    + "\"ActionType\": \"reply\","
-                    + " \"ActionBody\": \""
+            if (jsonCounters.getJSONArray("data").getJSONObject(i).getInt("ISSEVERALTARIF")==1){
+                if ( cntMultLocalPokaz == 0 ){
+                    cntMultLocalPokaz += 1;
+                    actionBodyMult += ";"
+                                + jsonCounters.getJSONArray("data").getJSONObject(i).getInt("COUNTERID")
+                                + ";"
+                                + jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")
+                                + ";"
+                                + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("LASTPOKAZ")
+                                + ";"
+                                + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE");
+                }
+                else if (cntMultLocalPokaz > 0 && cntMultLocalPokaz < 3){
+                    cntMultLocalPokaz += 1;
+                    actionBodyMult += ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("LASTPOKAZ")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE");
+                }
+                else if (cntMultLocalPokaz == 3){
+                    cntMultLocalPokaz += 1;
+                    actionBodyMult += ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("LASTPOKAZ")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE");
+                    JSONObject firstBtnCnt = new JSONObject("{"
+                            + "\"ActionType\": \"reply\","
+                            + " \"ActionBody\": \""
+                            + actionBodyMult
+                            + "\","
+                            + " \"Text\": \""+"Багатотарифний ліч. "+cntCounterMult+"\","
+                            + " \"TextSize\": \"regular\"}");
+                    jsonArrayButtons.put(firstBtnCnt);
+                    cntCounterMult += 1;
+                }
+                else {
+                    cntMultLocalPokaz = 1;
+                    actionBodyMult = "cntmulti;"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getInt("COUNTERID")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("LASTPOKAZ")
+                            + ";"
+                            + jsonCounters.getJSONArray("data").getJSONObject(i).getString("LASTPOKAZDATE");;
+                }
+
+            }
+            else {
+                JSONObject firstBtnCnt = new JSONObject("{"
+                        + "\"ActionType\": \"reply\","
+                        + " \"ActionBody\": \""
                         + "cnt;"
                         + jsonCounters.getJSONArray("data").getJSONObject(i).getInt("COUNTERID")
                         + ";"
@@ -51,9 +126,11 @@ public class JsonPatterns {
                         + ";"
                         + jsonCounters.getJSONArray("data").getJSONObject(i).getDouble("KOEFPOKAZ")
                         + "\","
-                    + " \"Text\": \""+jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")+"\","
-                    + " \"TextSize\": \"regular\"}");
-            jsonArrayButtons.put(firstBtnCnt);
+                        + " \"Text\": \""+jsonCounters.getJSONArray("data").getJSONObject(i).getString("ABCCNT")+"\","
+                        + " \"TextSize\": \"regular\"}");
+                jsonArrayButtons.put(firstBtnCnt);
+            }
+
         }
         jsonPattern.put("Buttons", jsonArrayButtons);
 
